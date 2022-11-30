@@ -33,13 +33,7 @@
 
 <body>
     <div class="container-fluid position-relative d-flex p-0">
-        <!-- Spinner Start -->
-        <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-        <!-- Spinner End -->
+       
 
 
         <!-- Sign In Start -->
@@ -54,7 +48,7 @@
                         </div>
                        
                         <div class="form-floating mb-3">
-                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                            <input  type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
                             <label for="floatingInput">Email </label>
                         </div>
                         <div class="form-floating mb-4">
@@ -68,7 +62,7 @@
                             </div>
                             <a href="">Recordar Contraseña</a>
                         </div>
-                        <a href="admin.html" type="submit" class="btn btn-primary py-3 w-100 mb-4">Iniciar Sesion</a>
+                        <input id="login" href="" type="submit" onclick="getInput();" class="btn btn-primary py-3 w-100 mb-4" value="Iniciar sesion"></input>
                         <p class="text-center mb-0">Aun no tienes una cuenta? <a href="signup.html">Registrate</a></p>
                     </div>
                 </div>
@@ -76,20 +70,45 @@
         </div>
         <!-- Sign In End -->
     </div>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/chart/chart.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/waypoints/waypoints.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="lib/tempusdominus/js/moment.min.js"></script>
-    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
-    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/mainadmin.js"></script>
+    <script type="text/javascript">
+        function getInput(){
+            let correo = document.getElementById("floatingInput").value;
+            let pass = document.getElementById("floatingPassword").value;
+            if(correo === null || correo === undefined || correo === ''){
+                alert("Campo email vacío")
+                return
+            }
+            if(pass === null || pass === undefined || pass === ''){
+                alert("Campo contraseña vacío")
+                return
+            }
+            const reqBody = {
+                nombreUsuario:correo,
+                password:pass
+            }
+            
+            fetch('http://localhost:8080/auth/login', {
+                method: "POST",
+                body:JSON.stringify(reqBody),
+                headers: {"Content-type": "application/json;charset=UTF-8"}
+                })
+                .then(response => response.json()) 
+                .then(json => {
+                    saveUserOnLocalStorage(json);
+                    login(json.nombreUsuario);
+                })
+                .catch(err => console.log(err));
+        }
+        function saveUserOnLocalStorage(user){
+            localStorage.setItem('TOKEN', user.token);
+            localStorage.setItem('USERNAME', user.nombreUsuario);
+        }
+        function login(nombreUsuario){
+            alert("Bienvenido, "+ nombreUsuario);
+            window.location.href= "admin.html";
+        }
+        
+    </script>
 </body>
 
 </html>

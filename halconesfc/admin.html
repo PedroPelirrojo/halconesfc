@@ -54,7 +54,7 @@
                         <div class="bg-success rounded-circle border border-2 border-white position-absolute end-0 bottom-0 p-1"></div>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0">Jhon Doe</h6>
+                        <h6 id="userName" class="mb-0">Jhon Doe</h6>
                         <span>Admin</span>
                     </div>
                 </div>
@@ -167,12 +167,12 @@
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <img class="rounded-circle me-lg-2" src="images/user.jpg" alt="" style="width: 40px; height: 40px;">
-                            <span class="d-none d-lg-inline-flex">John Doe</span>
+                            <span id="userNameCollapse" class="d-none d-lg-inline-flex">John Doe</span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                             <a href="#" class="dropdown-item">My Profile</a>
                             <a href="#" class="dropdown-item">Settings</a>
-                            <a href="#" class="dropdown-item">Log Out</a>
+                            <a href="#" onclick="logout();" class="dropdown-item">Log Out</a>
                         </div>
                     </div>
                 </div>
@@ -484,6 +484,55 @@
 
     <!-- Template Javascript -->
     <script src="js/mainadmin.js"></script>
+    <script type="text/javascript">
+        $( document ).ready(function() {
+        const userName = localStorage.getItem('USERNAME');
+        const token = localStorage.getItem('TOKEN');
+        if(token === null || token === ''|| token === undefined) {
+            window.location.href="signin.html"
+        }else {
+            fetch('http://localhost:8080/auth/auth', {
+                method: "GET",
+                headers: {"Content-type": "application/json;charset=UTF-8", 'Authorization':token}
+                })
+                .then(response => response.json()) 
+                .then(json => {
+                    if(json.user === "usuario no logeado"){
+                        window.location.href="signin.html"
+                    }else{
+                        return
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+        document.getElementById('userName').innerHTML = userName;
+        document.getElementById('userNameCollapse').innerHTML = userName;
+        userNameCollapse
+    });
+ 
+    $( window ).on( "load", function() {
+        console.log( "window loaded" );
+    });
+        // $( document ).ready(function() {
+        //     document.getElementById('userName').innerHTML = "JORGE";
+        // });
+        function logout(){
+            const token = localStorage.getItem('TOKEN')
+            
+            fetch('http://localhost:8080/auth/logout', {
+                method: "POST",
+                body:token,
+                headers: {"Content-type": "application/json;charset=UTF-8"}
+                })
+                .then(response => response.json()) 
+                .then(json => {
+                    localStorage.removeItem('TOKEN');
+                    localStorage.removeItem('USERNAME');
+                    window.location.href="signin.html"
+                })
+                .catch(err => console.log(err));
+        }
+    </script>
 </body>
 
 </html>
